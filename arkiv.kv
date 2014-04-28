@@ -1,9 +1,64 @@
 #:kivy 1.8
 
-#<ScrollView>:
-#    size_hint: None, None
+<ArkivRoot>:
+    menu: menu
+    layout: layout
+    Screen:
+        id: menu
+        name: "menu"
+        ScrollView:
+            size_hint_x: 1
+            GridLayout:
+                id: layout
+                cols: 1
+                spacing: 10
+                size_hint_y: None
 
-<Domain>:
+<MyBar>:
+    orientation: "vertical"
     size_hint_y: None
-    height: 30
+    height: "50dp"
+    ActionBar:
+        ActionView:
+            use_separator: True
+            ActionPrevious:
+                title: "Arkiv"
+                with_previous: True
+            ActionButton:
+                text: "Next"
 
+<Category>:
+    view: view
+    size_hint_y: None
+    height: "40dp"
+    CategoryView:
+        id: view
+        name: root.text
+
+<CategoryView>:
+    carousel: carousel
+    bar: bar
+    BoxLayout:
+        orientation: "vertical"
+        size_hint_y: 1
+        MyBar:
+            id: bar
+        Carousel:
+            id: carousel
+
+<CategorySubView>:
+    accordion: accordion
+    CategoryList:
+        id: accordion
+
+<CategoryArticle>:
+    label: label
+    CategoryArticleLabel:
+        id: label
+
+<CategoryArticleLabel>:
+    text: "[b]Authors:[/b]\n%s\n[b]Abstract:[/b]\n%s"
+    markup: True
+
+<CategoryList>:
+    orientation: "vertical"

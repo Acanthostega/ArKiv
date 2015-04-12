@@ -1,18 +1,15 @@
 #:kivy 1.8
 
 <ArkivRoot>:
-    menu: menu
-    layout: layout
-    Screen:
-        id: menu
-        name: "menu"
-        ScrollView:
-            size_hint_x: 1
-            GridLayout:
-                id: layout
-                cols: 1
-                spacing: 10
-                size_hint_y: None
+    orientation: "vertical"
+    size_hint_y: 1
+    MyBar:
+        id: bar
+
+<Menu>:
+    size_hint_x: 1
+    hide_root: True
+    indent_level: 0
 
 <MyBar>:
     orientation: "vertical"
@@ -28,21 +25,17 @@
                 text: "Next"
 
 <Category>:
-    view: view
-    size_hint_y: None
-    height: "40dp"
-    CategoryView:
-        id: view
-        name: root.text
+    #layout: layout
+    #BoxLayout:
+    #    id: layout
+    #    orientation: "vertical"
+    #    size_hint_y: None
 
 <CategoryView>:
     carousel: carousel
-    bar: bar
     BoxLayout:
         orientation: "vertical"
         size_hint_y: 1
-        MyBar:
-            id: bar
         Carousel:
             id: carousel
 
@@ -59,6 +52,14 @@
 <CategoryArticleLabel>:
     text: "[b]Authors:[/b]\n%s\n[b]Abstract:[/b]\n%s"
     markup: True
+
+<SubCategory>:
+    view: view
+    size_hint_y: None
+    height: "40dp"
+    CategoryView:
+        id: view
+        name: root.text
 
 <CategoryList>:
     orientation: "vertical"

@@ -9,17 +9,55 @@ import urllib
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.network.urlrequest import UrlRequest
-from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.accordion import Accordion, AccordionItem
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.label import Label
+from kivy.garden.navigationdrawer import NavigationDrawer
+from kivy.uix.treeview import TreeView, TreeViewNode, TreeViewLabel
 
 CATEGORIES = {
-    "Astrophysics": {
-        "search_query": "cat:astro-ph",
-        "start": 0,
-        "max_results": 10,
+    "Astrophysics":
+    {
+        "Astrophysics of Galaxies": {
+            "search_query": "cat:astro-ph.GA",
+            "start": 0,
+            "max_results": 10,
+        },
+        "Cosmology\nand Non-galactic Astrophysics": {
+            "search_query": "cat:astro-ph.CO",
+            "start": 0,
+            "max_results": 10,
+        },
+        "Earth and Planetary Astrophysics": {
+            "search_query": "cat:astro-ph.EP",
+            "start": 0,
+            "max_results": 10,
+        },
+        "High Energy\nAstrophysical Phenomena": {
+            "search_query": "cat:astro-ph.HE",
+            "start": 0,
+            "max_results": 10,
+        },
+        "Instrumentation\nand Methods for Astrophysics": {
+            "search_query": "cat:astro-ph.IM",
+            "start": 0,
+            "max_results": 10,
+        },
+        "Solar and Stellar Astrophysics": {
+            "search_query": "cat:astro-ph.SR",
+            "start": 0,
+            "max_results": 10,
+        },
+    },
+    "Condensed Matter":
+    {
+        "Disordered Systems\nand Neural Networks": {
+            "search_query": "cat:cond-mat.dis-nn",
+            "start": 0,
+            "max_results": 10,
+        },
+
     }
 }
 
@@ -69,11 +107,15 @@ class ArxivAPI(UrlRequest):
         super(ArxivAPI, self).__init__(*args, **tmp)
 
 
+class Menu(TreeView):
+    pass
+
+
 class MyBar(BoxLayout):
     pass
 
 
-class CategoryView(Screen):
+class CategoryView(BoxLayout):
 
     carousel = ObjectProperty()
     bar = ObjectProperty()
@@ -112,7 +154,12 @@ class CategoryArticleLabel(Label):
     pass
 
 
-class Category(Button):
+class Category(TreeViewLabel):
+
+    layout = ObjectProperty()
+
+
+class SubCategory(Button, TreeViewNode):
 
     view = ObjectProperty()
 
@@ -124,12 +171,11 @@ class Category(Button):
         # create a new screen
         self.view = CategoryView(name=self.text)
 
-        # switch to the screen
-        self.screenManager.switch_to(
-            self.view,
-            direction="right",
-            duration=1.,
-        )
+        try:
+            self.screenManager.remove_widget(self.screenManager.main_panel)
+        except Exception as e:
+            print e
+        self.screenManager.add_widget(self.view)
 
         # request the range of values
         self.makeRequest()
@@ -167,21 +213,28 @@ class Category(Button):
         self.screenManager = screen
 
 
-class ArkivRoot(ScreenManager):
-    menu = ObjectProperty()
-    layout = ObjectProperty()
+class ArkivRoot(BoxLayout):
+    pass
 
 
 class ArKivApp(App):
 
     def build(self):
         root = ArkivRoot()
-        root.layout.bind(minimum_height=root.layout.setter('height'))
-        for k, v in CATEGORIES.items():
-            but = Category(text=k)
-            but.addScreenManager(root)
-            but.properties = v
-            root.layout.add_widget(but)
+        nav = NavigationDrawer()
+        root.add_widget(nav)
+        nav.anim_type = "slide_above_simple"
+        menu = Menu()
+        for name, category in CATEGORIES.items():
+            view = Category(text=name)
+            for subname, v in category.items():
+                sub = SubCategory()
+                sub.properties = v
+                sub.text = subname
+                sub.addScreenManager(nav)
+                menu.add_node(sub, view)
+            menu.add_node(view)
+        nav.add_widget(menu)
         return root
 
 
